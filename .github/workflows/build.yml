@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  OpenAsar:
+  WebSmack:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,42 +30,3 @@ jobs:
           git add -A 
           git commit -m "Build"
           git push
-          
-  KernelElectron:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 7.6.0
-
-      - name: Clean Old Version
-        run: rm -rf kernel.asar
-
-      - name: Build Kernel's Asar
-        run: |
-          mkdir kernel && cd kernel
-          git clone https://github.com/kernel-mod/browser && cd browser
-          pnpm i
-          cd ..
-          git clone https://github.com/kernel-mod/electron && cd electron
-          pnpm i
-          pnpm run build
-          mv dist/kernel.asar ../../kernel.asar
-          git rev-parse HEAD | cut -c 1-7 > /tmp/km
-          cd ..
-          rm -rf browser && rm -rf electron
-
-      - name: Commit Changes
-        env:
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-        run: |
-          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git config --local user.name 'github-actions[bot]'
-          git pull || exit 0
-          git add ./kernel.asar || exit 0
-          git commit -m "Update Kernel's Asar | $(cat /tmp/km)" ./kernel.asar || exit 0
-          git push || exit 0
-          REPO="kernel-mod/electron" COMMIT=$(cat /tmp/km) /bin/bash .github/discwebhook.sh
-
-  
