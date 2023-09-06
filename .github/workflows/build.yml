@@ -16,7 +16,7 @@ jobs:
           node-version: 16.x
       - uses: pnpm/action-setup@v2
         with:
-          version: latest
+          version: 7
 
       - name: Build 
         run: |
