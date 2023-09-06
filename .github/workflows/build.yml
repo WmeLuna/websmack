@@ -22,6 +22,8 @@ jobs:
         run: |
           pnpm i
           pnpm run prepublish
+          pwd
+          ls
 
       - name: Commit Changes
         run: |
